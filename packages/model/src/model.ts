@@ -1,5 +1,4 @@
 import type { StrokeId, AuthorId, EventId } from "./ids.ts";
-import { assertNever } from "./util/assertNever.ts";
 
 export type Point = { readonly x: number; readonly y: number; readonly p?: number };
 
@@ -15,11 +14,7 @@ export type Stroke = {
 export type StrokePatch = { color?: string; width?: number };
 
 type Verdict = {
-  readonly sees: string;               // unprompted reading, captured first
-  readonly match: number;              // 0–1
-  readonly reasoning: string;
-  readonly model: string;
-  readonly latencyMs: number;
+  readonly match: number; // 0 - 1
 };
 
 export type DocEvent =

@@ -1,7 +1,7 @@
 import type { Stroke, DocEvent } from "./model.ts";
 import {assertNever} from './util/assertNever.ts'
 
-type DocState = {
+export type DocState = {
   readonly strokes: readonly Stroke[];
 };
 
