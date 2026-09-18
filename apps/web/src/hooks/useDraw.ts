@@ -1,12 +1,12 @@
-import { AuthorId, Point, Store } from "@linemix/model";
-import { useRef } from "react";
-import { toPath } from "@linemix/model";
-
+import { AuthorId, Point, simplify, Store, strokeAdded } from '@linemix/model';
+import { useRef } from 'react';
+import { toPath } from '@linemix/model';
+import { useUiStore } from '../state/ui';
 
 export function useDraw(store: Store, authorId: AuthorId, toCanvas: (e: PointerEvent) => Point) {
   const liveRef = useRef<SVGPathElement>(null);
   const pts = useRef<Point[]>([]);
-  const tool = useUiStore(s => s.tool);   // colour, width
+  const brush = useUiStore((s) => s.brush);
 
   const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!e.isPrimary) return;
@@ -24,10 +24,13 @@ export function useDraw(store: Store, authorId: AuthorId, toCanvas: (e: PointerE
 
   const onPointerUp = () => {
     if (pts.current.length === 0) return;
-    store.append(strokeAdded(simplify(pts.current, 0.5), tool, authorId));
+    store.append(strokeAdded(simplify(pts.current, 0.5), brush, authorId));
     pts.current = [];
     liveRef.current?.setAttribute('d', '');
   };
 
-  return { liveRef, handlers: { onPointerDown, onPointerMove, onPointerUp, onPointerCancel: onPointerUp } };
+  return {
+    liveRef,
+    handlers: { onPointerDown, onPointerMove, onPointerUp, onPointerCancel: onPointerUp },
+  };
 }
