@@ -5,7 +5,9 @@
   "scripts": {
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devEngines": {
     "packageManager": {
@@ -17,6 +19,7 @@
   "packageManager": "pnpm@12.4.1",
   "devDependencies": {
     "@types/node": "^26.5.1",
+    "prettier": "^3.9.7",
     "typescript": "^7.0.2"
   }
 }
