@@ -1,4 +1,5 @@
 import type { StrokeId, AuthorId, EventId } from './ids.ts';
+import { z } from 'zod';
 
 export type Point = { readonly x: number; readonly y: number; readonly p?: number };
 
@@ -36,3 +37,8 @@ export type DocEvent =
       verdict: Verdict;
       at: number;
     };
+
+export type GameId = `game_${string}`;
+export type Game = { readonly id: GameId; readonly name: string; readonly createdAt: number };
+export const gameId = (): GameId => `game_${crypto.randomUUID()}`;
+export const CreateGameSchema = z.object({ name: z.string().trim().min(1).max(60) });
