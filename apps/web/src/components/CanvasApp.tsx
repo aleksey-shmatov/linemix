@@ -1,4 +1,5 @@
 'use client';
+import { GuessForm } from './GuessForm';
 import { useState } from 'react';
 import { createStore, empty, newAuthorId } from '@linemix/model';
 import { Canvas } from './canvas/Canvas';
@@ -13,6 +14,9 @@ export function CanvasApp() {
       <Canvas store={store} me={me} />
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
         <Toolbar store={store} me={me} />
+      </div>
+      <div className="absolute right-6 top-6 w-72">
+        <GuessForm store={store} me={me} />
       </div>
     </div>
   );

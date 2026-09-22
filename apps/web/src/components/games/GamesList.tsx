@@ -8,7 +8,7 @@ export function GamesList() {
   const create = useCreateGame();
   const [name, setName] = useState('');
 
-  function onSubmit(e: React.FormEvent) {
+  function onSubmit(e: React.SubmitEvent) {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) return;
