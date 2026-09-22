@@ -14,7 +14,7 @@ export type Stroke = {
 
 export type StrokePatch = { color?: string; width?: number };
 
-type Verdict = {
+export type Verdict = {
   readonly match: number; // 0 - 1
 };
 
@@ -41,4 +41,5 @@ export type DocEvent =
 export type GameId = `game_${string}`;
 export type Game = { readonly id: GameId; readonly name: string; readonly createdAt: number };
 export const gameId = (): GameId => `game_${crypto.randomUUID()}`;
+export const isGameId = (id: string): id is GameId => id.startsWith('game_');
 export const CreateGameSchema = z.object({ name: z.string().trim().min(1).max(60) });
