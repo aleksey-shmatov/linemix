@@ -7,7 +7,7 @@ const THRESHOLD = 0.7;
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  console.warn(params, id)
+  console.warn(params, id);
   if (!isGameId(id)) return Response.json({ error: 'unknown game' }, { status: 404 });
 
   const body = Body.safeParse(await req.json().catch(() => null));
