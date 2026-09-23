@@ -1,4 +1,5 @@
 import type { Stroke, DocEvent } from './model.ts';
+import { toPath } from './render.ts';
 import { assertNever } from './util/assertNever.ts';
 
 export type DocState = {

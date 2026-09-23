@@ -1,5 +1,5 @@
 import { applyEvent } from '../state.ts';
-import type { DocEvent, Stroke } from '../model.ts';
+import type { DocEvent } from '../model.ts';
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 

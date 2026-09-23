@@ -1,4 +1,4 @@
-import type { Point } from './model.ts';
+import type { Point, Stroke } from './model.ts';
 
 export function toPath(points: readonly Point[]): string {
   let d = '';
@@ -40,4 +40,19 @@ function perpendicularDistance(p: Point, a: Point, b: Point): number {
   const len = Math.hypot(dx, dy);
   if (len === 0) return Math.hypot(p.x - a.x, p.y - a.y); // a and b coincide
   return Math.abs(dy * p.x - dx * p.y + b.x * a.y - b.y * a.x) / len;
+}
+
+export function strokesToSvg(
+  strokes: readonly Stroke[],
+  opts?: { size?: number; background?: string },
+): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${opts?.size ?? 100}" height="${opts?.size ?? 1000}" viewBox="0 0 ${opts?.size ?? 100} ${opts?.size ?? 1000}">
+    ${opts?.background ? `<rect width="100%" height="100%" fill="${opts.background}" />` : ''}
+    ${strokes
+      .map(
+        (stroke) =>
+          `<path d="${toPath(stroke.points)}" stroke="${stroke.color}" stroke-width="${stroke.width}" fill="none" />`,
+      )
+      .join('')}
+  </svg>`;
 }

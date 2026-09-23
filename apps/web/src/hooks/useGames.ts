@@ -1,3 +1,4 @@
+import { getGames, createGame } from '@/server/games';
 import type { Game } from '@linemix/model';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -6,7 +7,7 @@ export const gameKeys = { all: ['games'] as const };
 export function useGames() {
   return useQuery({
     queryKey: gameKeys.all,
-    queryFn: async (): Promise<Game[]> => (await fetch('/api/games')).json(),
+    queryFn: async (): Promise<Game[]> => getGames(),
   });
 }
 
@@ -14,9 +15,9 @@ export function useCreateGame() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (name: string): Promise<Game> => {
-      const res = await fetch('/api/games', { method: 'POST', body: JSON.stringify({ name }) });
-      if (!res.ok) throw new Error('create failed');
-      return res.json();
+      const res = await createGame({ name });
+      if (!res.ok) throw new Error(res.reason);
+      return res.game;
     },
     onMutate: async (name) => {
       await qc.cancelQueries({ queryKey: gameKeys.all });
