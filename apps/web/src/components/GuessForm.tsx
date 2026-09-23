@@ -1,6 +1,6 @@
-import { postGuess } from '@/lib/api';
 import { useActionState } from 'react';
 import type { AuthorId, Store } from '@linemix/model';
+import { submitGuess } from '@/server/actions';
 
 type GuessState =
   { status: 'idle' } | { status: 'done'; result: boolean } | { status: 'error'; message: string };
@@ -10,14 +10,14 @@ export const GuessForm = ({ store, me }: { store: Store; me: AuthorId }) => {
     async (_prev: GuessState, fd: FormData): Promise<GuessState> => {
       const guess = String(fd.get('guess') ?? '').trim();
       try {
-        console.warn('Submitting guess:', guess);
-        const result = await postGuess('game_lol', guess);
+        const result = await submitGuess({ guess });
+        if (!result.ok) throw new Error(result.reason);
         return { status: 'done', result: result.accepted };
       } catch (e) {
         return {
           status: 'error',
           message:
-            e instanceof Error && e.message === 'judge'
+            e instanceof Error && e.message === 'unavailable'
               ? 'The judge is unavailable — try again'
               : 'Something went wrong',
         };
