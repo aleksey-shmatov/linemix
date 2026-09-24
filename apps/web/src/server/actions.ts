@@ -1,6 +1,9 @@
 'use server';
 import { z } from 'zod';
 import { judge } from './judge';
+import { GameIdSchema, StrokeSchema } from '@linemix/model';
+import { savePublished } from './published';
+import { revalidateTag } from 'next/cache';
 
 const Body = z.object({ guess: z.string().trim().min(1).max(40) });
 const THRESHOLD = 0.7;
@@ -14,4 +17,20 @@ export async function submitGuess({ guess }: z.infer<typeof Body>) {
   } catch {
     return { ok: false as const, reason: 'unavailable' as const };
   }
+}
+
+const PublishInput = z.object({
+  id: GameIdSchema,
+  title: z.string().trim().min(1).max(60),
+  strokes: z.array(StrokeSchema).max(2000).readonly(),
+});
+
+export async function publishGame(input: z.infer<typeof PublishInput>) {
+  const parsed = PublishInput.safeParse(input);
+  if (!parsed.success) return { ok: false as const, reason: 'invalid' as const };
+
+  savePublished({ ...parsed.data, publishedAt: Date.now() });
+  revalidateTag('gallery', 'max');
+  revalidateTag(parsed.data.id, 'max');
+  return { ok: true as const };
 }

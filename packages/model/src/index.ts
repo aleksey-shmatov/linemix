@@ -4,3 +4,4 @@ export * from './store.ts';
 export * from './state.ts';
 export * from './render.ts';
 export * from './events.ts';
+export * from './schema/primitives.ts';

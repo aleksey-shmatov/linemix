@@ -46,7 +46,7 @@ export function strokesToSvg(
   strokes: readonly Stroke[],
   opts?: { size?: number; background?: string },
 ): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${opts?.size ?? 100}" height="${opts?.size ?? 1000}" viewBox="0 0 ${opts?.size ?? 100} ${opts?.size ?? 1000}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${opts?.size ?? '100%'}" height="${opts?.size ?? '100%'}" viewBox="0 0 ${opts?.size ?? 1000} ${opts?.size ?? 1000}">
     ${opts?.background ? `<rect width="100%" height="100%" fill="${opts.background}" />` : ''}
     ${strokes
       .map(
