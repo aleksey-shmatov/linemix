@@ -6,9 +6,8 @@ import { RelativeTime } from '@/components/RelativeTime';
 
 async function Thumbnails() {
   'use cache';
-  cacheLife('max')
+  cacheLife('max');
   cacheTag('gallery');
-
 
   const games = await listPublished();
 
