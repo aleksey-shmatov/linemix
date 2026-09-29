@@ -1,11 +1,12 @@
 import Link from 'next/link';
-import { cacheTag } from 'next/cache';
+import { cacheTag, cacheLife } from 'next/cache';
 import { strokesToSvg } from '@linemix/model';
 import { listPublished } from '@/server/published';
 import { RelativeTime } from '@/components/RelativeTime';
 
 async function Thumbnails() {
   'use cache';
+  cacheLife('max');
   cacheTag('gallery');
 
   const games = await listPublished();

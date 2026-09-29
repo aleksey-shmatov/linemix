@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { getPublished } from '@/server/published';
 import { GameId, isGameId, strokesToSvg } from '@linemix/model';
-import { cacheTag } from 'next/cache';
+import { cacheLife, cacheTag } from 'next/cache';
 import Link from 'next/link';
 import { RelativeTime } from '@/components/RelativeTime';
 
@@ -14,6 +14,7 @@ async function PublishedDrawing({ params }: { params: Promise<{ id: string }> })
 
 async function CachedDrawing({ id }: { id: GameId }) {
   'use cache';
+  cacheLife('max');
   cacheTag(id);
   const game = await getPublished(id);
   if (!game) notFound();
