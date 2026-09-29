@@ -38,7 +38,13 @@ export type DocEvent =
       at: number;
     };
 
-export type Game = { readonly id: GameId; readonly name: string; readonly createdAt: number };
+export type Game = {
+  readonly id: GameId;
+  authorId: AuthorId;
+  readonly name: string;
+  readonly createdAt: number;
+  visibility: 'private' | 'public';
+};
 export const CreateGameSchema = z.object({ name: z.string().trim().min(1).max(60) });
 
 export type PublishedGame = {

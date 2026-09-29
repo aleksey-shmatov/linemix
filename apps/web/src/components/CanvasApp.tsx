@@ -1,29 +1,18 @@
 'use client';
 import { useState } from 'react';
 import { CanvasProvider } from './canvas/CanvasContext';
-import { AuthorId, createStore, empty, GameId, isAuthorId, newAuthorId } from '@linemix/model';
+import { AuthorId, createStore, empty, GameId } from '@linemix/model';
 import { PublishButton } from './PublishButton';
 import { Canvas } from './canvas/Canvas';
 import { Toolbar } from '@/components/Toolbar';
 import { GuessForm } from './GuessForm';
 
-export function CanvasApp({ gameId }: { gameId: GameId }) {
+export function CanvasApp({ gameId, me }: { gameId: GameId; me: AuthorId }) {
   const [store] = useState(() => createStore(empty));
-  // TODO - author id should come from the server or authentication context rather than localStorage
-  const [me] = useState<AuthorId | null>(() => {
-    if (typeof window === 'undefined') return null;
-    const stored = localStorage.getItem('authorId');
-    if (stored && isAuthorId(stored)) return stored;
-    const id = newAuthorId();
-    localStorage.setItem('authorId', id);
-    return id;
-  });
-
-  if (!me) return null;
-
+  const [value] = useState(() => ({ store, me, gameId }));
   // TODO - move this into state/memo
   return (
-    <CanvasProvider value={{ store, me, gameId }}>
+    <CanvasProvider value={value}>
       <div className="relative grid h-dvh place-items-center p-4">
         <Canvas store={store} me={me} />
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2">

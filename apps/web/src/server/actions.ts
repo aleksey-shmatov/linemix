@@ -1,9 +1,12 @@
 'use server';
+import { can } from './permissions';
+import { getGame } from './games';
 import { z } from 'zod';
 import { judge } from './judge';
 import { GameIdSchema, StrokeSchema } from '@linemix/model';
 import { savePublished } from './published';
-import { revalidateTag } from 'next/cache';
+import { updateTag } from 'next/cache';
+import { currentAuthor } from './identity';
 
 const Body = z.object({ guess: z.string().trim().min(1).max(40) });
 const THRESHOLD = 0.7;
@@ -27,10 +30,19 @@ const PublishInput = z.object({
 
 export async function publishGame(input: z.infer<typeof PublishInput>) {
   const parsed = PublishInput.safeParse(input);
-  if (!parsed.success) return { ok: false as const, reason: 'invalid' as const };
+  if (!parsed.success) {
+    console.error('publish input invalid', parsed.error.issues);
+    return { ok: false as const, reason: 'invalid' as const };
+  }
+  const me = await currentAuthor();
+
+  // 3. fetch the subject
+  const game = await getGame(parsed.data.id);
+  if (!game) return { ok: false as const, reason: 'not_found' as const };
+  if (!can(me, game, 'publish')) return { ok: false as const, reason: 'forbidden' as const };
 
   savePublished({ ...parsed.data, publishedAt: Date.now() });
-  revalidateTag('gallery', 'max');
-  revalidateTag(parsed.data.id, 'max');
+  updateTag('gallery');
+  updateTag(parsed.data.id);
   return { ok: true as const };
 }
