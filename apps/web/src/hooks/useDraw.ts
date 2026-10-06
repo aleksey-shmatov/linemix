@@ -1,9 +1,10 @@
-import { AuthorId, Point, simplify, Store, strokeAdded } from '@linemix/model';
+import { AuthorId, GameId, Point, simplify, Store, strokeAdded } from '@linemix/model';
 import { useRef } from 'react';
 import { toPath } from '@linemix/model';
 import { useUiStore } from '../state/ui';
+import { saveStrokes } from '@/server/actions';
 
-export function useDraw(store: Store, authorId: AuthorId, toCanvas: (e: PointerEvent) => Point) {
+export function useDraw(gameId: GameId, store: Store, authorId: AuthorId, toCanvas: (e: PointerEvent) => Point) {
   const liveRef = useRef<SVGPathElement>(null);
   const pts = useRef<Point[]>([]);
   const brush = useUiStore((s) => s.brush);
@@ -22,11 +23,12 @@ export function useDraw(store: Store, authorId: AuthorId, toCanvas: (e: PointerE
     liveRef.current?.setAttribute('d', toPath(pts.current));
   };
 
-  const onPointerUp = () => {
+  const onPointerUp = async () => {
     if (pts.current.length === 0) return;
     store.append(strokeAdded(simplify(pts.current, 0.5), brush, authorId));
     pts.current = [];
     liveRef.current?.setAttribute('d', '');
+    await saveStrokes(gameId, store.getState().strokes);
   };
 
   return {

@@ -1,4 +1,4 @@
-import { getGames, createGame } from '@/server/games';
+import { listGames, createGame } from '@/server/games';
 import type { Game } from '@linemix/model';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -7,7 +7,7 @@ export const gameKeys = { all: ['games'] as const };
 export function useGames() {
   return useQuery({
     queryKey: gameKeys.all,
-    queryFn: async (): Promise<Game[]> => getGames(),
+    queryFn: async (): Promise<Game[]> => listGames(),
   });
 }
 
@@ -24,7 +24,7 @@ export function useCreateGame() {
       const prev = qc.getQueryData<Game[]>(gameKeys.all);
       qc.setQueryData<Game[]>(gameKeys.all, (old = []) => [
         ...old,
-        { id: `game_pending_${Date.now()}`, name, createdAt: Date.now() },
+        { id: `game_pending_${Date.now()}`, name,  createdAt: Date.now(), ownerId: 'pending', visibility: 'public' as const },
       ]);
       return { prev };
     },
