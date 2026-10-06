@@ -7,11 +7,11 @@ export function can(authorId: AuthorId | undefined, game: Game, action: Action):
 
   switch (action) {
     case 'view':
-      return game.visibility === 'public' || isOwner;
+      return game.visibility === 'open' || isOwner;
     case 'draw':
       return (
         authorId !== undefined &&
-        (game.visibility === 'public' || game.visibility === 'open' || isOwner)
+        (game.visibility === 'open' || isOwner)
       );
     case 'publish':
     case 'delete':
