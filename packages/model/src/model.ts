@@ -38,12 +38,14 @@ export type DocEvent =
       at: number;
     };
 
+export type Visibility = 'private' | 'public' | 'open';
+
 export type Game = {
   readonly id: GameId;
-  authorId: AuthorId;
+  ownerId: AuthorId;
   readonly name: string;
   readonly createdAt: number;
-  visibility: 'private' | 'public';
+  visibility: Visibility;
 };
 export const CreateGameSchema = z.object({ name: z.string().trim().min(1).max(60) });
 

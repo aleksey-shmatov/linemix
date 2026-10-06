@@ -1,11 +1,11 @@
 'use client';
-import { AuthorId, Point, Store } from '@linemix/model';
+import { AuthorId, GameId, Point, Store } from '@linemix/model';
 import { Strokes } from './Strokes';
 import { useDraw } from '../../hooks/useDraw';
 import { useRef } from 'react';
 import { useUiStore } from '../../state/ui';
 
-export function Canvas({ store, me }: { store: Store; me: AuthorId }) {
+export function Canvas({ gameId, store, me }: { gameId: GameId; store: Store; me: AuthorId }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const toCanvas = (e: PointerEvent): Point => {
     const svg = svgRef.current!;
@@ -18,7 +18,7 @@ export function Canvas({ store, me }: { store: Store; me: AuthorId }) {
   const tool = useUiStore((s) => s.tool);
   const brush = useUiStore((s) => s.brush);
   const select = useUiStore((s) => s.select);
-  const { liveRef, handlers } = useDraw(store, me, (e) => toCanvas(e));
+  const { liveRef, handlers } = useDraw(gameId, store, me, (e) => toCanvas(e));
   return (
     <svg
       ref={svgRef}

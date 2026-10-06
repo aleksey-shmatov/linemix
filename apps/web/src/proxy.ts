@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { updateSession } from './lib/supabase/proxy';
 
-export function proxy(request: NextRequest) {
-  if (request.cookies.has('authorId')) return NextResponse.next();
-
-  const response = NextResponse.next();
-  response.cookies.set('authorId', `author_${crypto.randomUUID()}`, {
-    httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 365,
-  });
-  return response;
+export async function proxy(request: NextRequest) {
+  return updateSession(request);
 }
 
 export const config = {

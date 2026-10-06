@@ -5,3 +5,4 @@ export * from './state.ts';
 export * from './render.ts';
 export * from './events.ts';
 export * from './schema/primitives.ts';
+export * from './schema/schemas.ts';

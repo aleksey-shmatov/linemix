@@ -7,7 +7,9 @@
     "test": "pnpm -r test",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "db:types": "supabase gen types typescript --local > apps/web/src/lib/supabase/database.types.ts",
+    "db:reset": "supabase db reset && pnpm db:types"
   },
   "devEngines": {
     "packageManager": {
