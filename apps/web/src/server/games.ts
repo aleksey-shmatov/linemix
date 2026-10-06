@@ -41,11 +41,7 @@ function toDoc(row: Pick<GameDocRow, 'doc'>): PersistedDoc {
 
 export async function getGame(id: GameId): Promise<Game | null> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('games')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle();
+  const { data, error } = await supabase.from('games').select('*').eq('id', id).maybeSingle();
 
   if (error) throw error;
   return data ? toGame(data) : null;
