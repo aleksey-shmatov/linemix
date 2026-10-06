@@ -1,9 +1,11 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
+import { connection } from 'next/dist/server/web/exports';
 
 export async function createClient() {
-  const cookieStore = await cookies(); // async in Next 16
+  await connection();
+  const cookieStore = await cookies();
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

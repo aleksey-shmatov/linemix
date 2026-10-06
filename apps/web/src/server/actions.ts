@@ -64,7 +64,7 @@ export async function createGame(_prev: unknown, formData: FormData) {
       id: newGameId(),
       name: parsed.data.name,
       ownerId: me,
-      visibility: 'public',
+      visibility: 'open',
     });
     revalidatePath('/');
     return { ok: true as const, game };

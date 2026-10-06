@@ -23,10 +23,35 @@ export type Database = {
   };
   public: {
     Tables: {
+      game_docs: {
+        Row: {
+          doc: NonNullable<Json>;
+          game_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          doc?: NonNullable<Json>;
+          game_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          doc?: NonNullable<Json>;
+          game_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'game_docs_game_id_fkey';
+            columns: ['game_id'];
+            isOneToOne: true;
+            referencedRelation: 'games';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       games: {
         Row: {
           created_at: string;
-          doc: NonNullable<Json>;
           id: string;
           name: string;
           owner_id: string;
@@ -35,7 +60,6 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
-          doc?: NonNullable<Json>;
           id?: string;
           name: string;
           owner_id: string;
@@ -44,7 +68,6 @@ export type Database = {
         };
         Update: {
           created_at?: string;
-          doc?: NonNullable<Json>;
           id?: string;
           name?: string;
           owner_id?: string;

@@ -8,7 +8,7 @@ const GameSchema = z.object({
   name: z.string(),
   createdAt: z.number().int().positive(),
   publishedAt: z.number().int().positive().nullable(),
-  visibility: z.enum(['private', 'public', 'open']),
+  visibility: z.enum(['private', 'open']),
 }) satisfies z.ZodType<Game>;
 
 export { GameSchema };

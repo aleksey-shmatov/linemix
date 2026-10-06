@@ -1,34 +1,30 @@
 import 'server-only';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
 import {
   type Game,
-  type DocState,
   type GameId,
   type AuthorId,
-  GameSchema,
   type Visibility,
-  CreateGameSchema,
-  newGameId,
+  GameSchema,
+  StrokesSchema,
 } from '@linemix/model';
 import type { Database } from '@/lib/supabase/database.types';
-import { currentAuthor } from './identity';
-import z from 'zod';
-import { StrokesSchema } from '@linemix/model';
+import { z } from 'zod';
 
 type GameRow = Database['public']['Tables']['games']['Row'];
-type DocColumn = NonNullable<GameRow['doc']>; // strips the `| undefined`
+type GameDocRow = Database['public']['Tables']['game_docs']['Row'];
+type DocColumn = NonNullable<GameDocRow['doc']>;
 
-type PersistedDoc = z.infer<typeof DocSchema>;
+export const PersistedDocSchema = z.object({ strokes: StrokesSchema });
+export type PersistedDoc = z.infer<typeof PersistedDocSchema>;
 
-const DocSchema = z.object({
-  strokes: StrokesSchema,
-});
-
-function toDoc(row: Omit<GameRow, 'doc'> & { doc: DocColumn }): PersistedDoc {
-  return DocSchema.parse(row.doc);
+/** PersistedDoc is structurally JSON; the cast exists only because our arrays
+ *  are readonly and Json's are not. The real guard is the parse on read. */
+function toJson(doc: PersistedDoc): DocColumn {
+  return doc as unknown as DocColumn;
 }
 
-function toGame(row: Omit<GameRow, 'doc'>): Game {
+function toGame(row: GameRow): Game {
   return GameSchema.parse({
     id: row.id,
     name: row.name,
@@ -39,13 +35,13 @@ function toGame(row: Omit<GameRow, 'doc'>): Game {
   });
 }
 
+function toDoc(row: Pick<GameDocRow, 'doc'>): PersistedDoc {
+  return PersistedDocSchema.parse(row.doc);
+}
+
 export async function getGame(id: GameId): Promise<Game | null> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('games')
-    .select('id, name, owner_id, visibility, created_at, published_at')
-    .eq('id', id)
-    .maybeSingle();
+  const { data, error } = await supabase.from('games').select('*').eq('id', id).maybeSingle();
 
   if (error) throw error;
   return data ? toGame(data) : null;
@@ -57,20 +53,26 @@ export async function getGameWithDoc(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('games')
-    .select('*') // includes doc
+    .select('*, game_docs(doc)')
     .eq('id', id)
     .maybeSingle();
 
   if (error) throw error;
   if (!data) return null;
-  return { game: toGame(data), doc: toDoc(data) };
+
+  // PostgREST returns an object or a one-element array depending on how it
+  // reads the relationship; normalise rather than guess.
+  const embedded = Array.isArray(data.game_docs) ? data.game_docs[0] : data.game_docs;
+  if (!embedded) throw new Error(`game ${id} has no doc row`);
+
+  return { game: toGame(data), doc: toDoc(embedded) };
 }
 
 export async function listGames(): Promise<Game[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('games')
-    .select('id, name, owner_id, visibility, created_at, published_at')
+    .select('*')
     .order('created_at', { ascending: false })
     .limit(50);
 
@@ -90,7 +92,7 @@ export async function insertGame(input: {
     .insert({
       id: input.id,
       name: input.name,
-      owner_id: input.ownerId, // ← column name, not domain name
+      owner_id: input.ownerId,
       visibility: input.visibility,
     })
     .select()
@@ -100,37 +102,12 @@ export async function insertGame(input: {
   return toGame(data);
 }
 
-export async function saveDoc(id: GameId, doc: DocState): Promise<void> {
+export async function saveDoc(id: GameId, doc: PersistedDoc): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase
-    .from('games')
-    .update({ doc: doc as unknown as DocColumn })
-    .eq('id', id);
+    .from('game_docs')
+    .update({ doc: toJson(doc), updated_at: new Date().toISOString() })
+    .eq('game_id', id);
 
   if (error) throw error;
-}
-
-export async function createGame(params: z.infer<typeof CreateGameSchema>) {
-  const parsed = CreateGameSchema.safeParse(params);
-  if (!parsed.success) {
-    return { ok: false as const, reason: 'invalid' };
-  }
-  const me = await currentAuthor();
-  if (!me) {
-    return { ok: false as const, reason: 'forbidden' as const };
-  }
-  const game = {
-    id: newGameId(),
-    name: parsed.data.name,
-    createdAt: Date.now(),
-    ownerId: me,
-    visibility: 'public' as const,
-  };
-  await insertGame({
-    id: game.id,
-    name: game.name,
-    ownerId: game.ownerId,
-    visibility: game.visibility,
-  });
-  return { ok: true as const, game };
 }

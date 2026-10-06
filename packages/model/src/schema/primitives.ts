@@ -36,4 +36,4 @@ export const StrokeSchema = z.object({
   schemaVersion: z.literal(1),
 }) satisfies z.ZodType<Stroke>;
 
-export const StrokesSchema = z.array(StrokeSchema).min(1).max(2000).readonly();
+export const StrokesSchema = z.array(StrokeSchema).min(0).max(2000).readonly();

@@ -38,7 +38,7 @@ export type DocEvent =
       at: number;
     };
 
-export type Visibility = 'private' | 'public' | 'open';
+export type Visibility = 'private' | 'open';
 
 export type Game = {
   readonly id: GameId;
