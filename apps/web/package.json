@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:db": "node --test --env-file=.env.test \"tests/db/**/*.test.ts\""
   },
   "dependencies": {
     "@linemix/model": "workspace:*",
