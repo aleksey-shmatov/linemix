@@ -9,7 +9,10 @@ export function can(authorId: AuthorId | undefined, game: Game, action: Action):
     case 'view':
       return game.visibility === 'public' || isOwner;
     case 'draw':
-      return authorId !== undefined && (game.visibility === 'public' || game.visibility === 'open' || isOwner);
+      return (
+        authorId !== undefined &&
+        (game.visibility === 'public' || game.visibility === 'open' || isOwner)
+      );
     case 'publish':
     case 'delete':
       return isOwner;

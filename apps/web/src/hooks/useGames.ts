@@ -24,7 +24,13 @@ export function useCreateGame() {
       const prev = qc.getQueryData<Game[]>(gameKeys.all);
       qc.setQueryData<Game[]>(gameKeys.all, (old = []) => [
         ...old,
-        { id: `game_pending_${Date.now()}`, name,  createdAt: Date.now(), ownerId: 'pending', visibility: 'public' as const },
+        {
+          id: `game_pending_${Date.now()}`,
+          name,
+          createdAt: Date.now(),
+          ownerId: 'pending',
+          visibility: 'public' as const,
+        },
       ]);
       return { prev };
     },

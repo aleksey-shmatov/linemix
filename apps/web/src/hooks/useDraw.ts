@@ -4,7 +4,12 @@ import { toPath } from '@linemix/model';
 import { useUiStore } from '../state/ui';
 import { saveStrokes } from '@/server/actions';
 
-export function useDraw(gameId: GameId, store: Store, authorId: AuthorId, toCanvas: (e: PointerEvent) => Point) {
+export function useDraw(
+  gameId: GameId,
+  store: Store,
+  authorId: AuthorId,
+  toCanvas: (e: PointerEvent) => Point,
+) {
   const liveRef = useRef<SVGPathElement>(null);
   const pts = useRef<Point[]>([]);
   const brush = useUiStore((s) => s.brush);

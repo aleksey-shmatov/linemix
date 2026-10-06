@@ -7,7 +7,15 @@ import { Canvas } from './canvas/Canvas';
 import { Toolbar } from '@/components/Toolbar';
 import { GuessForm } from './GuessForm';
 
-export function CanvasApp({ gameId, me, doc }: { gameId: GameId; me: AuthorId; doc: { readonly strokes: readonly Stroke[] } }) {
+export function CanvasApp({
+  gameId,
+  me,
+  doc,
+}: {
+  gameId: GameId;
+  me: AuthorId;
+  doc: { readonly strokes: readonly Stroke[] };
+}) {
   const [store] = useState(() => createStore({ strokes: doc.strokes }));
   const [value] = useState(() => ({ store, me, gameId }));
   // TODO - move this into state/memo

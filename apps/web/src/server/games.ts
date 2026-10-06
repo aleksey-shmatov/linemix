@@ -16,7 +16,7 @@ import z from 'zod';
 import { StrokesSchema } from '@linemix/model';
 
 type GameRow = Database['public']['Tables']['games']['Row'];
-type DocColumn = NonNullable<GameRow['doc']>;    // strips the `| undefined`
+type DocColumn = NonNullable<GameRow['doc']>; // strips the `| undefined`
 
 type PersistedDoc = z.infer<typeof DocSchema>;
 
@@ -41,7 +41,11 @@ function toGame(row: Omit<GameRow, 'doc'>): Game {
 
 export async function getGame(id: GameId): Promise<Game | null> {
   const supabase = await createClient();
-  const { data, error } = await supabase.from('games').select('id, name, owner_id, visibility, created_at, published_at').eq('id', id).maybeSingle();
+  const { data, error } = await supabase
+    .from('games')
+    .select('id, name, owner_id, visibility, created_at, published_at')
+    .eq('id', id)
+    .maybeSingle();
 
   if (error) throw error;
   return data ? toGame(data) : null;
@@ -53,7 +57,7 @@ export async function getGameWithDoc(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('games')
-    .select('*')              // includes doc
+    .select('*') // includes doc
     .eq('id', id)
     .maybeSingle();
 
