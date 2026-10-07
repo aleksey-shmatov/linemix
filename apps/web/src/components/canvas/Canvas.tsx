@@ -29,7 +29,7 @@ export function Canvas({ gameId, store, me }: { gameId: GameId; store: Store; me
         if (tool === 'select') select(null);
       }}
     >
-      <Strokes store={store} />
+      <Strokes />
       <path
         ref={liveRef}
         stroke={brush.color}

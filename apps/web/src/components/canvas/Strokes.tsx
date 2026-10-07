@@ -1,9 +1,9 @@
-import { toPath, type Store } from '@linemix/model';
+import { toPath } from '@linemix/model';
 import { useDoc } from '../../hooks/useDoc';
 import { useUiStore } from '../../state/ui';
 
-export function Strokes({ store }: { store: Store }) {
-  const strokes = useDoc(store, (s) => s.strokes);
+export function Strokes() {
+  const { strokes } = useDoc();
   const tool = useUiStore((s) => s.tool);
   const select = useUiStore((s) => s.select);
   const selectedId = useUiStore((s) => s.selectedId);

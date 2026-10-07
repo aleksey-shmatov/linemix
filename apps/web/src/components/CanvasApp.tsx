@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { CanvasProvider } from './canvas/CanvasContext';
-import { AuthorId, createStore, GameId, type Stroke } from '@linemix/model';
+import { AuthorId, createYjsStore, GameId, type Stroke } from '@linemix/model';
+import * as Y from 'yjs';
 import { PublishButton } from './PublishButton';
 import { Canvas } from './canvas/Canvas';
 import { Toolbar } from '@/components/Toolbar';
@@ -16,8 +17,16 @@ export function CanvasApp({
   me: AuthorId;
   doc: { readonly strokes: readonly Stroke[] };
 }) {
-  const [store] = useState(() => createStore({ strokes: doc.strokes }));
-  const [value] = useState(() => ({ store, me, gameId }));
+  const [{ ydoc, store }] = useState(() => {
+    const ydoc = new Y.Doc();
+    const store = createYjsStore(ydoc, me);
+    ydoc.transact(() => {
+      for (const s of doc.strokes) store.apply({ kind: 'stroke_added', authorId: me, stroke: s });
+    });
+    return { ydoc, store };
+  });
+
+  const [value] = useState(() => ({ store, ydoc, me, gameId }));
   // TODO - move this into state/memo
   return (
     <CanvasProvider value={value}>

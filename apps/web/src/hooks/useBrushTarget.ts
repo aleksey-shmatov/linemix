@@ -10,9 +10,8 @@ export function useBrushTarget(store: Store, me: AuthorId) {
   const setBrushColor = useUiStore((s) => s.setColor);
   const setBrushWidth = useUiStore((s) => s.setWidth);
 
-  const selected = useDoc(store, (s) =>
-    selectedId ? s.strokes.find((x) => x.id === selectedId) : undefined,
-  );
+  const { strokes } = useDoc();
+  const selected = selectedId ? strokes.find((x) => x.id === selectedId) : undefined;
   const target = tool === 'select' && selected ? selected : null;
 
   return {
@@ -20,11 +19,11 @@ export function useBrushTarget(store: Store, me: AuthorId) {
     width: target ? target.width : brush.width,
     editing: target !== null,
     setColor(color: string) {
-      if (target) store.append(strokeUpdated(target.id, { color }, me));
+      if (target) store.apply(strokeUpdated(target.id, { color }, me));
       else setBrushColor(color);
     },
     setWidth(width: number) {
-      if (target) store.append(strokeUpdated(target.id, { width }, me));
+      if (target) store.apply(strokeUpdated(target.id, { width }, me));
       else setBrushWidth(width);
     },
   };
