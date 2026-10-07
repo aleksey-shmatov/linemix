@@ -30,7 +30,7 @@ export function useDraw(
 
   const onPointerUp = async () => {
     if (pts.current.length === 0) return;
-    store.append(strokeAdded(simplify(pts.current, 0.5), brush, authorId));
+    store.apply(strokeAdded(simplify(pts.current, 0.5), brush, authorId));
     pts.current = [];
     liveRef.current?.setAttribute('d', '');
     await saveStrokes(gameId, store.getState().strokes);

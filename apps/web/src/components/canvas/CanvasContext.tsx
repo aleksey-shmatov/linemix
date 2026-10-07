@@ -1,8 +1,14 @@
 'use client';
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useSyncExternalStore } from 'react';
 import type { AuthorId, GameId, Store } from '@linemix/model';
+import type * as Y from 'yjs';
 
-type CanvasContextValue = { store: Store; me: AuthorId; gameId: GameId };
+type CanvasContextValue = {
+  store: Store;
+  ydoc: Y.Doc;
+  me: AuthorId;
+  gameId: GameId;
+};
 
 const CanvasContext = createContext<CanvasContextValue | null>(null);
 

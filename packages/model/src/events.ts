@@ -6,13 +6,15 @@ import {
   type StrokeId,
   newStrokeId,
   newEventId,
+  type StrokePatch,
+  type Command,
 } from './index.ts';
 
 export function strokeAdded(
   points: readonly Point[],
   tool: { color: string; width: number },
   authorId: AuthorId,
-): Extract<DocEvent, { kind: 'stroke_added' }> {
+): Extract<Command, { kind: 'stroke_added' }> {
   const stroke: Stroke = {
     id: newStrokeId(),
     points,
@@ -21,20 +23,9 @@ export function strokeAdded(
     color: tool.color,
     width: tool.width,
   };
-  return { id: newEventId(), kind: 'stroke_added', stroke, authorId, at: Date.now() };
+  return { kind: 'stroke_added', stroke, authorId };
 }
 
-export function strokeUpdated(
-  id: StrokeId,
-  patch: { color?: string; width?: number },
-  authorId: AuthorId,
-): Extract<DocEvent, { kind: 'stroke_updated' }> {
-  return {
-    id: newEventId(),
-    kind: 'stroke_updated',
-    strokeId: id,
-    patch,
-    authorId,
-    at: Date.now(),
-  };
+export function strokeUpdated(strokeId: StrokeId, patch: StrokePatch, authorId: AuthorId): Command {
+  return { kind: 'stroke_updated', authorId, strokeId, patch };
 }
