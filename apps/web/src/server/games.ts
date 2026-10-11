@@ -1,4 +1,5 @@
 import 'server-only';
+import * as Y from 'yjs';
 import { createClient } from '@/lib/supabase/server';
 import {
   type Game,
@@ -10,6 +11,7 @@ import {
 } from '@linemix/model';
 import type { Database } from '@/lib/supabase/database.types';
 import { z } from 'zod';
+import { fromBase64 } from '@/lib/base64';
 
 type GameRow = Database['public']['Tables']['games']['Row'];
 type GameDocRow = Database['public']['Tables']['game_docs']['Row'];
@@ -47,25 +49,24 @@ export async function getGame(id: GameId): Promise<Game | null> {
   return data ? toGame(data) : null;
 }
 
+type DocUpdateRow = { update: string };
+
 export async function getGameWithDoc(
   id: GameId,
-): Promise<{ game: Game; doc: PersistedDoc } | null> {
+): Promise<{ game: Game; update: Uint8Array | null } | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('games')
-    .select('*, game_docs(doc)')
+    .select('*, doc_updates(update)')
     .eq('id', id)
-    .maybeSingle();
+    .single();
 
-  if (error) throw error;
-  if (!data) return null;
+  if (error || !data) return null;
 
-  // PostgREST returns an object or a one-element array depending on how it
-  // reads the relationship; normalise rather than guess.
-  const embedded = Array.isArray(data.game_docs) ? data.game_docs[0] : data.game_docs;
-  if (!embedded) throw new Error(`game ${id} has no doc row`);
+  const rows = (data.doc_updates ?? []) as DocUpdateRow[];
+  const update = rows.length ? Y.mergeUpdates(rows.map((r) => fromBase64(r.update))) : null;
 
-  return { game: toGame(data), doc: toDoc(embedded) };
+  return { game: toGame(data), update };
 }
 
 export async function listGames(): Promise<Game[]> {
@@ -100,14 +101,4 @@ export async function insertGame(input: {
 
   if (error) throw error;
   return toGame(data);
-}
-
-export async function saveDoc(id: GameId, doc: PersistedDoc): Promise<void> {
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from('game_docs')
-    .update({ doc: toJson(doc), updated_at: new Date().toISOString() })
-    .eq('game_id', id);
-
-  if (error) throw error;
 }

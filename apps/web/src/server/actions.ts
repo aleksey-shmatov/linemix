@@ -1,6 +1,6 @@
 'use server';
-import { insertGame, saveDoc } from './games';
-import { CreateGameSchema, GameId, newGameId, Stroke, StrokesSchema } from '@linemix/model';
+import { insertGame } from './games';
+import { CreateGameSchema, newGameId } from '@linemix/model';
 import { can } from './permissions';
 import { getGame } from './games';
 import { z } from 'zod';
@@ -72,24 +72,4 @@ export async function createGame(_prev: unknown, formData: FormData) {
     console.error(e);
     return { ok: false as const, reason: 'failed' as const };
   }
-}
-
-export async function saveStrokes(gameId: GameId, strokes: readonly Stroke[]) {
-  const id = GameIdSchema.safeParse(gameId);
-  const parsed = StrokesSchema.safeParse(strokes);
-  if (!id.success || !parsed.success) {
-    console.error('saveStrokes input invalid', {
-      id: id.success ? undefined : id.error.issues,
-      strokes: parsed.success ? undefined : parsed.error.issues,
-    });
-    return { ok: false as const, reason: 'invalid' as const };
-  }
-
-  const me = await currentAuthor();
-  const game = await getGame(id.data);
-  if (!me || !game || !can(me, game, 'draw'))
-    return { ok: false as const, reason: 'forbidden' as const };
-
-  await saveDoc(id.data, { strokes: parsed.data });
-  return { ok: true as const };
 }

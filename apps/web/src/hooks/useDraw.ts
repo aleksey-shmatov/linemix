@@ -2,7 +2,6 @@ import { AuthorId, GameId, Point, simplify, Store, strokeAdded } from '@linemix/
 import { useRef } from 'react';
 import { toPath } from '@linemix/model';
 import { useUiStore } from '../state/ui';
-import { saveStrokes } from '@/server/actions';
 
 export function useDraw(
   gameId: GameId,
@@ -33,7 +32,6 @@ export function useDraw(
     store.apply(strokeAdded(simplify(pts.current, 0.5), brush, authorId));
     pts.current = [];
     liveRef.current?.setAttribute('d', '');
-    await saveStrokes(gameId, store.getState().strokes);
   };
 
   return {

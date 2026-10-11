@@ -1,4 +1,5 @@
 'use client';
+import { usePersistence } from '@/hooks/usePersistance';
 import { useState } from 'react';
 import { useRealtime } from '@/hooks/useRealtime';
 import { CanvasProvider } from './canvas/CanvasContext';
@@ -8,25 +9,29 @@ import { PublishButton } from './PublishButton';
 import { Canvas } from './canvas/Canvas';
 import { Toolbar } from '@/components/Toolbar';
 import { GuessForm } from './GuessForm';
+import { fromBase64 } from '@/lib/base64';
 
 export function CanvasApp({
   gameId,
   me,
-  doc,
+  initialUpdate,
 }: {
   gameId: GameId;
   me: AuthorId;
-  doc: { readonly strokes: readonly Stroke[] };
+  initialUpdate: string | null;
 }) {
   const [{ ydoc, store }] = useState(() => {
     const ydoc = new Y.Doc();
     const store = createYjsStore(ydoc, me);
     ydoc.transact(() => {
-      for (const s of doc.strokes) store.apply({ kind: 'stroke_added', authorId: me, stroke: s });
+      if (initialUpdate) {
+        Y.applyUpdate(ydoc, fromBase64(initialUpdate), 'remote');
+      }
     });
     return { ydoc, store };
   });
   useRealtime(ydoc, gameId);
+  usePersistence(ydoc, gameId);
 
   const [value] = useState(() => ({ store, ydoc, me, gameId }));
   // TODO - move this into state/memo
