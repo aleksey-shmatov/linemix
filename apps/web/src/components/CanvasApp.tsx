@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useRealtime } from '@/hooks/useRealtime';
 import { CanvasProvider } from './canvas/CanvasContext';
 import { AuthorId, createYjsStore, GameId, type Stroke } from '@linemix/model';
 import * as Y from 'yjs';
@@ -25,6 +26,7 @@ export function CanvasApp({
     });
     return { ydoc, store };
   });
+  useRealtime(ydoc, gameId);
 
   const [value] = useState(() => ({ store, ydoc, me, gameId }));
   // TODO - move this into state/memo

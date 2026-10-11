@@ -29,7 +29,7 @@ export const StrokeIdSchema = z.string().refine(isStrokeId, {
 
 export const StrokeSchema = z.object({
   id: StrokeIdSchema,
-  points: z.array(PointSchema).min(2).readonly(),
+  points: z.array(PointSchema).min(0).readonly(),
   authorId: z.string(),
   color: ColorSchema,
   width: WidthSchema,
