@@ -31,7 +31,7 @@ export function useRealtime(ydoc: Y.Doc, gameId: GameId) {
 
       onUpdate = (update, origin) => {
         if (origin === 'remote') return;
-        void ch.send({ type: 'broadcast', event: 'y', payload: { u: toBase64(update) } })
+        void ch.send({ type: 'broadcast', event: 'y', payload: { u: toBase64(update) } });
       };
 
       ch.subscribe((status, err) => {
