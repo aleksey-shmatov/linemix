@@ -1,4 +1,5 @@
 import { CanvasApp } from '@/components/CanvasApp';
+import { toBase64 } from '@/lib/base64';
 import { getGameWithDoc } from '@/server/games';
 import { currentAuthor } from '@/server/identity';
 import { isGameId, GameId } from '@linemix/model';
@@ -28,5 +29,12 @@ async function GameCanvas({ id }: { id: GameId }) {
   if (!me) return <CookiesRequired />;
   const found = await getGameWithDoc(id);
   if (!found) notFound();
-  return <CanvasApp key={id} gameId={id} me={me} doc={found.doc} />;
+  return (
+    <CanvasApp
+      key={id}
+      gameId={id}
+      me={me}
+      initialUpdate={found.update ? toBase64(found.update) : null}
+    />
+  );
 }

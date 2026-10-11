@@ -23,6 +23,35 @@ export type Database = {
   };
   public: {
     Tables: {
+      doc_updates: {
+        Row: {
+          at: string;
+          game_id: string;
+          seq: number;
+          update: string;
+        };
+        Insert: {
+          at?: string;
+          game_id: string;
+          seq?: never;
+          update: string;
+        };
+        Update: {
+          at?: string;
+          game_id?: string;
+          seq?: never;
+          update?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'doc_updates_game_id_fkey';
+            columns: ['game_id'];
+            isOneToOne: false;
+            referencedRelation: 'games';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       game_docs: {
         Row: {
           doc: NonNullable<Json>;
