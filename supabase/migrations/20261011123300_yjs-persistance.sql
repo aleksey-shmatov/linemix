@@ -18,4 +18,4 @@ create policy "write_doc_updates"
 on doc_updates
 for insert
 to authenticated
-with check (exists (select 1 from games where games.id = doc_updates.game_id and (games.visibility = 'open' or games.owner_id = auth.uid())));
+with check (exists (select 1 from games where games.id = doc_updates.game_id));
