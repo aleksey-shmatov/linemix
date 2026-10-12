@@ -13,6 +13,13 @@ Node 24 LTS
 React 19 + Compiler
 Next.js 16
 
+# Supabase CLI
+
+The version is pinned in `.github/workflows/ci.yml` and must match the local one.
+`supabase/config.toml` is coupled to the CLI that wrote it — a newer CLI reads an older config,
+an older CLI rejects a newer one outright with `failed to parse config: ... has invalid keys`.
+Bump the pin and the local install together.
+
 # Working rule
 
 Run pnpm -r typecheck and pnpm -r test after every change, and iterate until both pass before reporting done.

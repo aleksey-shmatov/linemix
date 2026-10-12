@@ -2,16 +2,24 @@ import { test, before, after } from 'node:test';
 import { createClient } from '@supabase/supabase-js';
 import assert from 'node:assert/strict';
 
-const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://127.0.0.1:54321';
+const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const secretKey = process.env.SUPABASE_SECRET_KEY;
+
+if (!publishableKey || !secretKey) {
+  throw new Error(
+    'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY and SUPABASE_SECRET_KEY are required. ' +
+      'Get them from: supabase status -o env',
+  );
+}
 
 // three ordinary clients — the roles the policies see
-const anon = createClient(URL, KEY);
-const alice = createClient(URL, KEY);
-const bob = createClient(URL, KEY);
+const anon = createClient(url, publishableKey);
+const alice = createClient(url, publishableKey);
+const bob = createClient(url, publishableKey);
 
 // the privileged one: same function, different key
-const admin = createClient(URL, process.env.SUPABASE_SECRET_KEY!, {
+const admin = createClient(url, secretKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
@@ -55,22 +63,28 @@ after(async () => {
 
 test('bob cannot draw in a private game', async () => {
   const { data, error } = await bob
-    .from('game_docs')
-    .update({ doc: { strokes: [{ id: 'x' }] } })
-    .eq('game_id', privateGame)
-    .select();
-  assert.equal(error, null);
-  assert.deepEqual(data, []);
+    .from('doc_updates')
+    .insert({ game_id: privateGame, update: 'AQ==' });
+  assert.notEqual(error, null);
+  assert.deepEqual(data, null);
 });
 
 test('bob can draw in an open game', async () => {
   const { data, error } = await bob
-    .from('game_docs')
-    .update({ doc: { strokes: [{ id: 'x' }] } })
-    .eq('game_id', openGame)
-    .select();
+    .from('doc_updates')
+    .insert({ game_id: openGame, update: 'AQ==' });
   assert.equal(error, null);
   assert.notDeepEqual(data, []);
+});
+
+test('alice can draw in her own private game', async () => {
+  const { data, error } = await alice
+    .from('doc_updates')
+    .insert({ game_id: privateGame, update: 'AQ==' })
+    .select();
+
+  assert.equal(error, null);
+  assert.equal(data?.length, 1);
 });
 
 test('an anonymous client cannot read a private game', async () => {
