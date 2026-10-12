@@ -86,7 +86,12 @@ export function createYjsStore(doc: Y.Doc, me: AuthorId): Store {
 
     getState() {
       snapshot ??= {
-        strokes: strokes.toArray().map((m) => StrokeSchema.parse(m.toJSON())),
+        // A peer on another schema version can push a stroke we can't read.
+        // Skip it rather than throwing, so the rest of the document survives.
+        strokes: strokes.toArray().flatMap((m) => {
+          const parsed = StrokeSchema.safeParse(m.toJSON());
+          return parsed.success ? [parsed.data] : [];
+        }),
       };
       return snapshot;
     },
