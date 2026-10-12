@@ -52,32 +52,6 @@ export type Database = {
           },
         ];
       };
-      game_docs: {
-        Row: {
-          doc: NonNullable<Json>;
-          game_id: string;
-          updated_at: string;
-        };
-        Insert: {
-          doc?: NonNullable<Json>;
-          game_id: string;
-          updated_at?: string;
-        };
-        Update: {
-          doc?: NonNullable<Json>;
-          game_id?: string;
-          updated_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'game_docs_game_id_fkey';
-            columns: ['game_id'];
-            isOneToOne: true;
-            referencedRelation: 'games';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
       games: {
         Row: {
           created_at: string;

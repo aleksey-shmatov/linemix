@@ -18,3 +18,25 @@ jobs:
       - run: pnpm format:check
       - run: pnpm -r typecheck
       - run: pnpm -r test
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - uses: supabase/setup-cli@v1
+      - run: supabase start
+      - run: supabase migration up --local
+      - name: Export local keys
+        run: |
+          eval "$(supabase status -o env)"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY"
+            echo "SUPABASE_SECRET_KEY=$SERVICE_ROLE_KEY"
+          } >> "$GITHUB_ENV"
+      - run: pnpm -r test:db
