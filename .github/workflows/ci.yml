@@ -54,7 +54,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - uses: supabase/setup-cli@v1
         with:
-          version: 2.x.y
+          version: 2.119.0
       - run: supabase start
       - run: supabase migration up --local
       - name: Export Supabase keys
