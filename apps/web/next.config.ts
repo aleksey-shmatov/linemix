@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@linemix/model'],
   cacheComponents: true,
   partialPrefetching: true,
-  output: 'standalone',
+  output: process.env.BUILD_STANDALONE ? 'standalone' : undefined,
+  serverExternalPackages: ['yjs'],
 };
 
 export default nextConfig;

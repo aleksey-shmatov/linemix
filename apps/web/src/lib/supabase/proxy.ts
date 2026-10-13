@@ -23,8 +23,8 @@ export async function updateSession(request: NextRequest) {
     data: { user },
     error,
   } = await supabase.auth.getUser();
-  if (error) {
-    console.error('Failed to get user', error);
+  if (error && error.name !== 'AuthSessionMissingError') {
+    console.error('auth check failed', error);
   }
   if (!user) {
     const { error: anonError } = await supabase.auth.signInAnonymously();

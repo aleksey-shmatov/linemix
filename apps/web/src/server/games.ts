@@ -14,17 +14,9 @@ import { z } from 'zod';
 import { fromBase64 } from '@/lib/base64';
 
 type GameRow = Database['public']['Tables']['games']['Row'];
-type GameDocRow = Database['public']['Tables']['game_docs']['Row'];
-type DocColumn = NonNullable<GameDocRow['doc']>;
 
 export const PersistedDocSchema = z.object({ strokes: StrokesSchema });
 export type PersistedDoc = z.infer<typeof PersistedDocSchema>;
-
-/** PersistedDoc is structurally JSON; the cast exists only because our arrays
- *  are readonly and Json's are not. The real guard is the parse on read. */
-function toJson(doc: PersistedDoc): DocColumn {
-  return doc as unknown as DocColumn;
-}
 
 function toGame(row: GameRow): Game {
   return GameSchema.parse({
@@ -35,10 +27,6 @@ function toGame(row: GameRow): Game {
     createdAt: Date.parse(row.created_at),
     publishedAt: row.published_at ? Date.parse(row.published_at) : null,
   });
-}
-
-function toDoc(row: Pick<GameDocRow, 'doc'>): PersistedDoc {
-  return PersistedDocSchema.parse(row.doc);
 }
 
 export async function getGame(id: GameId): Promise<Game | null> {

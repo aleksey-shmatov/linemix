@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:db": "node --test --env-file-if-exists=.env.test \"tests/db/**/*.test.ts\""
+    "test:db": "node --test --env-file-if-exists=.env.test \"tests/db/**/*.test.ts\"",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "pnpm --filter web test:e2e -- --ui"
   },
   "dependencies": {
     "@linemix/model": "workspace:*",
@@ -25,6 +27,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

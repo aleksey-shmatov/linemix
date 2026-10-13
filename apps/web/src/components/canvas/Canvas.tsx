@@ -21,6 +21,7 @@ export function Canvas({ gameId, store, me }: { gameId: GameId; store: Store; me
   const { liveRef, handlers } = useDraw(gameId, store, me, (e) => toCanvas(e));
   return (
     <svg
+      data-testid="canvas"
       ref={svgRef}
       viewBox="0 0 1000 1000"
       className="w-full h-full aspect-square  rounded-lg border bg-white"
