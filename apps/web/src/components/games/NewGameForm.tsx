@@ -7,7 +7,11 @@ export function NewGameForm() {
 
   return (
     <form action={action} className="flex gap-2">
+      <label htmlFor="name" className="sr-only">
+        Game Name
+      </label>
       <input
+        id="name"
         name="name"
         placeholder="New game name"
         maxLength={100}

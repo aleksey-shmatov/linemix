@@ -43,6 +43,7 @@ export function Strokes() {
               }}
             />
             <path
+              data-stroke-id={s.id}
               d={toPath(s.points)}
               stroke={s.color}
               strokeWidth={s.width}
