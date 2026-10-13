@@ -3,6 +3,13 @@ on:
   pull_request:
   push:
     branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+  SUPABASE_CLI_VERSION: 2.58.4
 
 jobs:
   check:
