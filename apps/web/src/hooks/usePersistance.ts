@@ -8,9 +8,8 @@ import { toBase64 } from '@/lib/base64';
 const FLUSH_MS = 500;
 export type SaveState = 'saved' | 'saving' | 'error';
 
-
 export function usePersistence(ydoc: Y.Doc, gameId: GameId) {
-    const [state, setState] = useState<SaveState>('saved');
+  const [state, setState] = useState<SaveState>('saved');
 
   useEffect(() => {
     const supabase = createClient();

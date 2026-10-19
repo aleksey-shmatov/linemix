@@ -8,7 +8,15 @@ import { useBrushTarget } from '@/hooks/useBrushTarget';
 const PALETTE = ['#111111', '#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'] as const;
 const WIDTHS = [2, 4, 8, 16] as const;
 
-export function Toolbar({ store, me, saveState }: { store: Store; me: AuthorId; saveState: SaveState }) {
+export function Toolbar({
+  store,
+  me,
+  saveState,
+}: {
+  store: Store;
+  me: AuthorId;
+  saveState: SaveState;
+}) {
   const tool = useUiStore((s) => s.tool);
   const setTool = useUiStore((s) => s.setTool);
   const { color, width, editing, setColor, setWidth } = useBrushTarget(store, me);

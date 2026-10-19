@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { drawStroke, selectStrokeAt, setStrokeColor, setStrokeWidth } from './drawStroke';
 
-
 test('concurrent edit by two users', async ({ browser }) => {
   const aliceCtx = await browser.newContext();
   const bobCtx = await browser.newContext();

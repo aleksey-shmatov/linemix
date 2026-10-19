@@ -18,7 +18,7 @@ test('a drawn stroke survives a reload', async ({ page }) => {
   await expect(strokes).toHaveCount(1);
 
   await expect(page.getByTestId('save-state')).toHaveAttribute('data-state', 'saved');
-  
+
   await page.reload();
   await expect(strokes).toHaveCount(1);
 });
