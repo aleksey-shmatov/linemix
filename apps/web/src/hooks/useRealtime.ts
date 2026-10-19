@@ -1,12 +1,15 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as Y from 'yjs';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import type { GameId } from '@linemix/model';
 import { fromBase64, toBase64 } from '@/lib/base64';
 
+export type ChannelState = 'connecting' | 'joined' | 'error';
+
 export function useRealtime(ydoc: Y.Doc, gameId: GameId) {
+  const [state, setState] = useState<ChannelState>('connecting');
   useEffect(() => {
     const supabase = createClient();
     let cancelled = false;
@@ -36,6 +39,9 @@ export function useRealtime(ydoc: Y.Doc, gameId: GameId) {
 
       ch.subscribe((status, err) => {
         console.log('[rt] subscribe', status, err ?? '');
+        setState(
+          status === 'SUBSCRIBED' ? 'joined' : status === 'CHANNEL_ERROR' ? 'error' : 'connecting',
+        );
       });
 
       ydoc.on('update', onUpdate);
@@ -48,4 +54,5 @@ export function useRealtime(ydoc: Y.Doc, gameId: GameId) {
       if (channel) void supabase.removeChannel(channel);
     };
   }, [ydoc, gameId]);
+  return state;
 }

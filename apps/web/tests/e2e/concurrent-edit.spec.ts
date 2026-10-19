@@ -19,7 +19,7 @@ test('concurrent edit by two users', async ({ browser }) => {
 
   const gameUrl = alice.url();
   await bob.goto(gameUrl);
-  await expect(bob.getByTestId('canvas')).toBeVisible();
+  await expect(bob.getByTestId('connection')).toHaveAttribute('data-state', 'joined');
 
   await drawStroke(alice, [
     [100, 100],
