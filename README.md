@@ -1,0 +1,4 @@
+### Issues
+
+A reconnecting client does not resync, convergence after a disconnect happens only through the durable log, on reload. Broadcast is ephemeral — nothing replays. A client that was offline missed every update sent while it was away, and rejoining the channel does not change that: the channel is a relay with no history, and neither side knows what the other is missing.
+The fix is a state-vector handshake. On joining, a client broadcasts Y.encodeStateVector(doc) — a compact description of what it already has. Peers reply with Y.encodeStateAsUpdate(doc, thatStateVector), which is a diff containing only what the asker lacks. That is the mechanism y-websocket uses and it is the correct answer here too.
