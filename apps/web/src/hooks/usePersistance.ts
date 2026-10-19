@@ -45,6 +45,22 @@ export function usePersistence(ydoc: Y.Doc, gameId: GameId) {
       }
     };
 
+    const beacon = () => {
+      if (pending.length === 0) return;
+
+      const batch = pending.splice(0);
+      const body = JSON.stringify({
+        gameId,
+        update: toBase64(Y.mergeUpdates(batch)),
+      });
+
+      const queued = navigator.sendBeacon(
+        '/api/flush',
+        new Blob([body], { type: 'application/json' }),
+      );
+      if (!queued) pending.unshift(...batch);
+    };
+
     const onUpdate = (update: Uint8Array, origin: unknown) => {
       if (origin === 'remote') return;
       pending.push(update);
@@ -52,7 +68,7 @@ export function usePersistence(ydoc: Y.Doc, gameId: GameId) {
     };
 
     const onHide = () => {
-      if (document.visibilityState === 'hidden') void flush();
+      if (document.visibilityState === 'hidden') beacon();
     };
 
     ydoc.on('update', onUpdate);

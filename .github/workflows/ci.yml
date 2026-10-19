@@ -39,6 +39,7 @@ jobs:
         with:
           version: 2.119.0
       - run: supabase start
+        timeout-minutes: 5
       - run: supabase migration up --local
       - name: Export local keys
         run: |
@@ -63,6 +64,7 @@ jobs:
         with:
           version: 2.119.0
       - run: supabase start
+        timeout-minutes: 5
       - run: supabase migration up --local
       - name: Export Supabase keys
         run: |
