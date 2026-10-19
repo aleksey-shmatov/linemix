@@ -1,4 +1,5 @@
 import { useUiStore } from '../state/ui';
+import type { SaveState } from '@/hooks/usePersistance';
 import { ToolButton } from './ui/ToolButton';
 import { Pencil, MousePointer2 } from 'lucide-react';
 import type { AuthorId, Store } from '@linemix/model';
@@ -7,7 +8,7 @@ import { useBrushTarget } from '@/hooks/useBrushTarget';
 const PALETTE = ['#111111', '#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'] as const;
 const WIDTHS = [2, 4, 8, 16] as const;
 
-export function Toolbar({ store, me }: { store: Store; me: AuthorId }) {
+export function Toolbar({ store, me, saveState }: { store: Store; me: AuthorId; saveState: SaveState }) {
   const tool = useUiStore((s) => s.tool);
   const setTool = useUiStore((s) => s.setTool);
   const { color, width, editing, setColor, setWidth } = useBrushTarget(store, me);
@@ -66,6 +67,20 @@ export function Toolbar({ store, me }: { store: Store; me: AuthorId }) {
       </div>
 
       {editing && <span className="text-xs text-neutral-500">Editing selection</span>}
+      <span className="ml-auto inline-grid justify-items-end text-xs text-neutral-500">
+        <span aria-hidden className="invisible col-start-1 row-start-1">
+          Not saved
+        </span>
+        <span
+          data-testid="save-state"
+          data-state={saveState}
+          role="status"
+          aria-live="polite"
+          className="col-start-1 row-start-1"
+        >
+          {saveState === 'saved' ? 'Saved' : saveState === 'saving' ? 'Saving…' : 'Not saved'}
+        </span>
+      </span>
     </div>
   );
 }

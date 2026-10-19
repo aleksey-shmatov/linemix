@@ -1,11 +1,6 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { drawStroke, selectStrokeAt, setStrokeColor, setStrokeWidth } from './drawStroke';
 
-export function flushed(page: Page) {
-  return page.waitForResponse(
-    (r) => r.url().includes('/rest/v1/doc_updates') && r.request().method() === 'POST' && r.ok(),
-  );
-}
 
 test('concurrent edit by two users', async ({ browser }) => {
   const aliceCtx = await browser.newContext();
@@ -43,12 +38,11 @@ test('concurrent edit by two users', async ({ browser }) => {
   await setStrokeColor(alice, '#f59e0b');
   await setStrokeWidth(bob, 8);
 
-  const bobPersisted = flushed(bob);
-  const alicePersisted = flushed(alice);
+  await expect(alice.getByTestId('save-state')).toHaveAttribute('data-state', 'saved');
+
   await bobCtx.setOffline(false);
 
-  await bobPersisted;
-  await alicePersisted;
+  await expect(bob.getByTestId('save-state')).toHaveAttribute('data-state', 'saved');
 
   await alice.reload();
   await bob.reload();

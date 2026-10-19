@@ -31,7 +31,7 @@ export function CanvasApp({
     return { ydoc, store };
   });
   useRealtime(ydoc, gameId);
-  usePersistence(ydoc, gameId);
+  const saveState = usePersistence(ydoc, gameId);
 
   const [value] = useState(() => ({ store, ydoc, me, gameId }));
   // TODO - move this into state/memo
@@ -40,7 +40,7 @@ export function CanvasApp({
       <div className="relative grid h-dvh place-items-center p-4">
         <Canvas gameId={gameId} store={store} me={me} />
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
-          <Toolbar store={store} me={me} />
+          <Toolbar store={store} me={me} saveState={saveState} />
         </div>
         <div className="absolute left-6 top-6">
           <PublishButton store={store} gameId={gameId} />

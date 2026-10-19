@@ -1,13 +1,17 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as Y from 'yjs';
 import { createClient } from '@/lib/supabase/client';
 import type { GameId } from '@linemix/model';
 import { toBase64 } from '@/lib/base64';
 
 const FLUSH_MS = 500;
+export type SaveState = 'saved' | 'saving' | 'error';
+
 
 export function usePersistence(ydoc: Y.Doc, gameId: GameId) {
+    const [state, setState] = useState<SaveState>('saved');
+
   useEffect(() => {
     const supabase = createClient();
     const pending: Uint8Array[] = [];
@@ -38,10 +42,12 @@ export function usePersistence(ydoc: Y.Doc, gameId: GameId) {
           return;
         }
         console.error('[persist] failed', error);
+        setState('error');
         pending.unshift(...batch);
         schedule();
       } else {
         failures = 0;
+        setState('saved');
       }
     };
 
@@ -63,6 +69,7 @@ export function usePersistence(ydoc: Y.Doc, gameId: GameId) {
 
     const onUpdate = (update: Uint8Array, origin: unknown) => {
       if (origin === 'remote') return;
+      setState('saving');
       pending.push(update);
       schedule();
     };
@@ -80,4 +87,5 @@ export function usePersistence(ydoc: Y.Doc, gameId: GameId) {
       void flush();
     };
   }, [ydoc, gameId]);
+  return state;
 }
