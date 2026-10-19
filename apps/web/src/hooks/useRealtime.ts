@@ -37,8 +37,7 @@ export function useRealtime(ydoc: Y.Doc, gameId: GameId) {
         void ch.send({ type: 'broadcast', event: 'y', payload: { u: toBase64(update) } });
       };
 
-      ch.subscribe((status, err) => {
-        console.log('[rt] subscribe', status, err ?? '');
+      ch.subscribe((status) => {
         setState(
           status === 'SUBSCRIBED' ? 'joined' : status === 'CHANNEL_ERROR' ? 'error' : 'connecting',
         );
