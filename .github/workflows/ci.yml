@@ -1,19 +1,23 @@
 name: CI
+
 on:
   pull_request:
   push:
     branches: [main]
+
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-v2
   cancel-in-progress: true
 
 env:
   NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
-  SUPABASE_CLI_VERSION: 2.58.4
+  SUPABASE_CLI_VERSION: 2.119.0
+  SUPABASE_SERVICES_EXCLUDE: studio,imgproxy,storage-api,edge-runtime,logflare,vector,supavisor
 
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -23,10 +27,13 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
+      - run: pnpm -r lint
       - run: pnpm -r typecheck
       - run: pnpm -r test
+
   database:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -37,10 +44,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - uses: supabase/setup-cli@v1
         with:
-          version: 2.119.0
-      - run: supabase start
+          version: ${{ env.SUPABASE_CLI_VERSION }}
+      - run: supabase start -x ${{ env.SUPABASE_SERVICES_EXCLUDE }}
+        timeout-minutes: 5
       - run: supabase migration up --local
-      - name: Export local keys
+      - name: Export Supabase keys
         run: |
           eval "$(supabase status -o env)"
           {
@@ -48,6 +56,7 @@ jobs:
             echo "SUPABASE_SECRET_KEY=${SECRET_KEY:-$SERVICE_ROLE_KEY}"
           } >> "$GITHUB_ENV"
       - run: pnpm -r test:db
+
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -61,15 +70,16 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - uses: supabase/setup-cli@v1
         with:
-          version: 2.119.0
-      - run: supabase start
+          version: ${{ env.SUPABASE_CLI_VERSION }}
+      - run: supabase start -x ${{ env.SUPABASE_SERVICES_EXCLUDE }}
+        timeout-minutes: 5
       - run: supabase migration up --local
       - name: Export Supabase keys
         run: |
           eval "$(supabase status -o env)"
           {
-            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE_KEY"
-            echo "SUPABASE_SECRET_KEY=$SECRET_KEY"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY:-$ANON_KEY}"
+            echo "SUPABASE_SECRET_KEY=${SECRET_KEY:-$SERVICE_ROLE_KEY}"
           } >> "$GITHUB_ENV"
       - run: pnpm --filter web exec playwright install --with-deps chromium
       - run: pnpm -r test:e2e

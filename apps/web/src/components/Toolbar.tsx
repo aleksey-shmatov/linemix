@@ -15,10 +15,20 @@ export function Toolbar({ store, me }: { store: Store; me: AuthorId }) {
   return (
     <div className="flex items-center gap-4 rounded-lg border bg-white/90 px-3 py-2 backdrop-blur">
       <div className="flex gap-1">
-        <ToolButton active={tool === 'draw'} onClick={() => setTool('draw')} label="Draw (B)">
+        <ToolButton
+          name="draw"
+          active={tool === 'draw'}
+          onClick={() => setTool('draw')}
+          label="Draw (B)"
+        >
           <Pencil className="size-4" />
         </ToolButton>
-        <ToolButton active={tool === 'select'} onClick={() => setTool('select')} label="Select (V)">
+        <ToolButton
+          name="select"
+          active={tool === 'select'}
+          onClick={() => setTool('select')}
+          label="Select (V)"
+        >
           <MousePointer2 className="size-4" />
         </ToolButton>
       </div>
@@ -29,7 +39,7 @@ export function Toolbar({ store, me }: { store: Store; me: AuthorId }) {
         {PALETTE.map((c) => (
           <button
             key={c}
-            aria-label={`Colour ${c}`}
+            aria-label={`Color ${c}`}
             aria-pressed={color === c}
             onClick={() => setColor(c)}
             style={{ backgroundColor: c }}

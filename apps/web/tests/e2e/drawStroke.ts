@@ -12,3 +12,19 @@ export async function drawStroke(page: Page, points: [number, number][]) {
   }
   await page.mouse.up();
 }
+
+export async function selectStrokeAt(page: Page, [x, y]: [number, number]) {
+  await page.getByRole('button', { name: 'select', exact: true }).click();
+  const canvas = page.getByTestId('canvas');
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error('canvas has no bounding box');
+  await page.mouse.click(box.x + x, box.y + y);
+}
+
+export async function setStrokeColor(page: Page, color: string) {
+  await page.getByRole('button', { name: `Color ${color}`, exact: true }).click();
+}
+
+export async function setStrokeWidth(page: Page, width: number) {
+  await page.getByRole('button', { name: `Width ${width}`, exact: true }).click();
+}
