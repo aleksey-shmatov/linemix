@@ -5,9 +5,7 @@ import { ToolButton } from './ui/ToolButton';
 import { Pencil, MousePointer2 } from 'lucide-react';
 import type { AuthorId, Store } from '@linemix/model';
 import { useBrushTarget } from '@/hooks/useBrushTarget';
-
-const PALETTE = ['#111111', '#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'] as const;
-const WIDTHS = [2, 4, 8, 16] as const;
+import { PALETTE, WIDTHS } from '@/pallete';
 
 const CONNECTION = {
   joined: { dot: 'bg-emerald-500', label: 'Connected' },
