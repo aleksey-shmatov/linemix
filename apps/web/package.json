@@ -10,7 +10,9 @@
     "test:db": "node --test --env-file-if-exists=.env.test \"tests/db/**/*.test.ts\"",
     "pretest:e2e": "next build",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "pnpm --filter web test:e2e -- --ui"
+    "test:e2e:ui": "pnpm --filter web test:e2e -- --ui",
+    "bench:generate": "node --env-file-if-exists=.env.test scripts/bench/generate.ts",
+    "bench:teardown": "node --env-file-if-exists=.env.test scripts/bench/teardown.ts"
   },
   "dependencies": {
     "@linemix/model": "workspace:*",
