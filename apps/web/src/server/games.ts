@@ -11,7 +11,7 @@ import {
 } from '@linemix/model';
 import type { Database } from '@/lib/supabase/database.types';
 import { z } from 'zod';
-import { fromBase64 } from '@/lib/base64';
+import { fromBase64, toBase64 } from '@/lib/base64';
 
 type GameRow = Database['public']['Tables']['games']['Row'];
 
@@ -42,6 +42,8 @@ type DocUpdateRow = { update: string };
 export async function getGameWithDoc(
   id: GameId,
 ): Promise<{ game: Game; update: Uint8Array | null } | null> {
+  const t0 = performance.now();
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('games')
@@ -49,10 +51,24 @@ export async function getGameWithDoc(
     .eq('id', id)
     .single();
 
+  const t1 = performance.now();
+
   if (error || !data) return null;
 
   const rows = (data.doc_updates ?? []) as DocUpdateRow[];
   const update = rows.length ? Y.mergeUpdates(rows.map((r) => fromBase64(r.update))) : null;
+  const t2 = performance.now();
+
+  console.log(
+    JSON.stringify({
+      game: data.name,
+      rows: rows.length,
+      b64Chars: rows.reduce((n, r) => n + r.update.length, 0),
+      queryMs: +(t1 - t0).toFixed(1),
+      mergeMs: +(t2 - t1).toFixed(1),
+      payloadChars: update ? toBase64(update).length : 0,
+    }),
+  );
 
   return { game: toGame(data), update };
 }
