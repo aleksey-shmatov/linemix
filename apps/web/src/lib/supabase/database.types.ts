@@ -23,6 +23,35 @@ export type Database = {
   };
   public: {
     Tables: {
+      doc_snapshots: {
+        Row: {
+          at: string;
+          game_id: string;
+          merged_seq: number;
+          update: string;
+        };
+        Insert: {
+          at?: string;
+          game_id: string;
+          merged_seq: number;
+          update: string;
+        };
+        Update: {
+          at?: string;
+          game_id?: string;
+          merged_seq?: number;
+          update?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'doc_snapshots_game_id_fkey';
+            columns: ['game_id'];
+            isOneToOne: true;
+            referencedRelation: 'games';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       doc_updates: {
         Row: {
           at: string;

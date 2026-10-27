@@ -42,12 +42,12 @@ type DocUpdateRow = { update: string };
 export async function getGameWithDoc(
   id: GameId,
 ): Promise<{ game: Game; update: Uint8Array | null } | null> {
-  const t0 = performance.now();
-
   const supabase = await createClient();
+
+  const t0 = performance.now();
   const { data, error } = await supabase
     .from('games')
-    .select('*, doc_updates(update)')
+    .select('*, doc_updates(update), doc_snapshots(update)')
     .eq('id', id)
     .single();
 
@@ -56,14 +56,18 @@ export async function getGameWithDoc(
   if (error || !data) return null;
 
   const rows = (data.doc_updates ?? []) as DocUpdateRow[];
-  const update = rows.length ? Y.mergeUpdates(rows.map((r) => fromBase64(r.update))) : null;
+  const snapshot = data.doc_snapshots as { update: string } | null;
+  const allUpdates = snapshot ? [snapshot, ...rows] : rows;
+  const update = allUpdates.length
+    ? Y.mergeUpdates(allUpdates.map((r) => fromBase64(r.update)))
+    : null;
   const t2 = performance.now();
 
   console.log(
     JSON.stringify({
       game: data.name,
-      rows: rows.length,
-      b64Chars: rows.reduce((n, r) => n + r.update.length, 0),
+      rows: allUpdates.length,
+      b64Chars: allUpdates.reduce((n, r) => n + r.update.length, 0),
       queryMs: +(t1 - t0).toFixed(1),
       mergeMs: +(t2 - t1).toFixed(1),
       payloadChars: update ? toBase64(update).length : 0,
