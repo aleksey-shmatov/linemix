@@ -13,7 +13,8 @@
     "test:e2e:ui": "pnpm --filter web test:e2e -- --ui",
     "bench:generate": "node --env-file-if-exists=.env.test scripts/bench/generate.ts",
     "bench:teardown": "node --env-file-if-exists=.env.test scripts/bench/teardown.ts",
-    "compact:doc": "node --env-file-if-exists=.env.test scripts/compactor.mts"
+    "compact:doc": "node --env-file-if-exists=.env.test scripts/compactor.mts",
+    "dev:hosted": "set -a && . ./.env.hosted && set +a && next dev"
   },
   "dependencies": {
     "@linemix/model": "workspace:*",
