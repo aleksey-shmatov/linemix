@@ -112,3 +112,17 @@ test('service role can bypass RLS and update any game', async () => {
   assert.equal(error, null);
   assert.deepEqual(data.length, 1);
 });
+
+test('authenticated clients cannot write snapshots', async () => {
+  await admin.auth.signInAnonymously();
+
+  const { data, error } = await admin.from('doc_snapshots').insert({
+    game_id: privateGame,
+    update: 'AAAA',
+    merged_seq: 1,
+  });
+
+  assert.notEqual(error, null);
+  assert.equal(error?.code, '42501');
+  assert.equal(data, null);
+});
