@@ -1,4 +1,5 @@
-// apps/web/src/state/ui.ts
+'use client';
+
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { createStore, useStore } from 'zustand';
 import { StrokeId } from '@linemix/model';
