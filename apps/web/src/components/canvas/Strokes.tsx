@@ -1,12 +1,13 @@
 import { toPath } from '@linemix/model';
 import { useDoc } from '../../hooks/useDoc';
 import { useUiStore } from '../../state/ui';
+import { useCanvasStore } from '@/state/canvas';
 
 export function Strokes() {
   const { strokes } = useDoc();
   const tool = useUiStore((s) => s.tool);
-  const select = useUiStore((s) => s.select);
-  const selectedId = useUiStore((s) => s.selectedId);
+  const select = useCanvasStore((s) => s.setSelectedId);
+  const selectedId = useCanvasStore((s) => s.selectedId);
   return (
     <>
       {strokes.map((s) => {

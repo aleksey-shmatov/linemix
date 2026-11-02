@@ -2,10 +2,11 @@ import type { AuthorId, Store } from '@linemix/model';
 import { strokeUpdated } from '@linemix/model';
 import { useUiStore } from '@/state/ui';
 import { useDoc } from '@/hooks/useDoc';
+import { useCanvasStore } from '@/state/canvas';
 
 export function useBrushTarget(store: Store, me: AuthorId) {
   const tool = useUiStore((s) => s.tool);
-  const selectedId = useUiStore((s) => s.selectedId);
+  const selectedId = useCanvasStore((s) => s.selectedId);
   const brush = useUiStore((s) => s.brush);
   const setBrushColor = useUiStore((s) => s.setColor);
   const setBrushWidth = useUiStore((s) => s.setWidth);

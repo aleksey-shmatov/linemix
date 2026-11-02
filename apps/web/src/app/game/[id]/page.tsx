@@ -2,6 +2,7 @@ import { CanvasApp } from '@/components/CanvasApp';
 import { toBase64 } from '@/lib/base64';
 import { getGameWithDoc } from '@/server/games';
 import { currentAuthor } from '@/server/identity';
+import { CanvasStoreProvider } from '@/state/canvas';
 import { isGameId, GameId } from '@linemix/model';
 import { notFound } from 'next/navigation';
 
@@ -30,11 +31,8 @@ async function GameCanvas({ id }: { id: GameId }) {
   const found = await getGameWithDoc(id);
   if (!found) notFound();
   return (
-    <CanvasApp
-      key={id}
-      gameId={id}
-      me={me}
-      initialUpdate={found.update ? toBase64(found.update) : null}
-    />
+    <CanvasStoreProvider key={id}>
+      <CanvasApp gameId={id} me={me} initialUpdate={found.update ? toBase64(found.update) : null} />
+    </CanvasStoreProvider>
   );
 }

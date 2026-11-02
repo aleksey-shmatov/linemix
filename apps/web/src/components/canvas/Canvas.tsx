@@ -4,6 +4,7 @@ import { Strokes } from './Strokes';
 import { useDraw } from '../../hooks/useDraw';
 import { useRef } from 'react';
 import { useUiStore } from '../../state/ui';
+import { useCanvasStore } from '@/state/canvas';
 
 export function Canvas({ gameId, store, me }: { gameId: GameId; store: Store; me: AuthorId }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -17,7 +18,7 @@ export function Canvas({ gameId, store, me }: { gameId: GameId; store: Store; me
   };
   const tool = useUiStore((s) => s.tool);
   const brush = useUiStore((s) => s.brush);
-  const select = useUiStore((s) => s.select);
+  const select = useCanvasStore((s) => s.setSelectedId);
   const { liveRef, handlers } = useDraw(gameId, store, me, (e) => toCanvas(e));
   return (
     <svg
