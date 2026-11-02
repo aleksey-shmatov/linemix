@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "tsc --noEmit -p apps/web && tsc --noEmit -p packages/model",
     "test": "pnpm -r test",
     "lint": "eslint .",
     "format": "prettier --write .",
