@@ -1,4 +1,4 @@
-import { describe, it } from 'node:test';
+import { it, describe } from 'vitest';
 import { strokesToSvg } from '../render.ts';
 import assert from 'node:assert/strict';
 

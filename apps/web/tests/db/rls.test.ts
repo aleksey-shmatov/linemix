@@ -1,4 +1,4 @@
-import { test, before, after } from 'node:test';
+import { test, beforeAll, afterAll } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
 import assert from 'node:assert/strict';
 
@@ -31,7 +31,7 @@ async function sweep() {
   await admin.from('games').delete().like('name', `${TAG}%`);
 }
 
-before(async () => {
+beforeAll(async () => {
   await sweep(); // leftovers from a crashed run
 
   const a = await alice.auth.signInAnonymously();
@@ -55,7 +55,7 @@ before(async () => {
   openGame = data.find((g) => g.visibility === 'open')!.id;
 });
 
-after(async () => {
+afterAll(async () => {
   await sweep(); // by tag, not by id
   if (aliceId) await admin.auth.admin.deleteUser(aliceId);
   if (bobId) await admin.auth.admin.deleteUser(bobId);
