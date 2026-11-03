@@ -1,6 +1,6 @@
 import { applyEvent } from '../state.ts';
 import type { DocEvent } from '../model.ts';
-import { describe, it } from 'node:test';
+import { it, describe } from 'vitest';
 import assert from 'node:assert/strict';
 
 describe('applyEvent', () => {

@@ -29,7 +29,7 @@ jobs:
       - run: pnpm format:check
       - run: pnpm -r lint
       - run: pnpm -r typecheck
-      - run: pnpm -r test
+      - run: pnpm test
 
   database:
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
             echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY:-$ANON_KEY}"
             echo "SUPABASE_SECRET_KEY=${SECRET_KEY:-$SERVICE_ROLE_KEY}"
           } >> "$GITHUB_ENV"
-      - run: pnpm -r test:db
+      - run: pnpm test:db
 
   e2e:
     runs-on: ubuntu-latest

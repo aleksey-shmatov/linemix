@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit -p apps/web && tsc --noEmit -p packages/model",
-    "test": "pnpm -r test",
+    "test": "vitest run --project '!db'",
+    "test:db": "vitest run --project db",
+    "test:all": "vitest run",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -21,7 +23,9 @@
   "packageManager": "pnpm@12.4.1",
   "devDependencies": {
     "@types/node": "^26.5.1",
+    "@vitest/coverage-v8": "^5.1.0",
     "prettier": "^3.9.7",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
   }
 }

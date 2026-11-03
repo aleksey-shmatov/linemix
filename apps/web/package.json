@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:db": "node --test --env-file-if-exists=.env.test \"tests/db/**/*.test.ts\"",
+    "test:db": "vitest run --project '!db'",
     "pretest:e2e": "next build",
     "test:e2e": "playwright test",
     "test:e2e:ui": "pnpm --filter web test:e2e -- --ui",

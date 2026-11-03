@@ -1,5 +1,4 @@
-// packages/model/src/store.test.ts
-import { describe, it } from 'node:test';
+import { it, describe } from 'vitest';
 import assert from 'node:assert/strict';
 import * as Y from 'yjs';
 
